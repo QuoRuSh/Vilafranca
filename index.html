@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pogomap Masnou</title>
+<link rel="apple-touch-icon" href="./icons/pstop.png">
+<link rel="shortcut icon" href="./icons/pstop.png">
+<!-- <link rel="shortcut icon" type="image/x-icon" href="./icons/pstop.png" /> -->
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.4.0/leaflet.css'>
+<link rel='stylesheet' href='https://labs.easyblog.it/maps/leaflet-search/src/leaflet-search.css'>
+<style>
+html, body, #map {height:100%;width:100%;padding:0px;margin:0px;}
+div#infoboxpic {
+    width: 160px;
+    /* 310 */
+    height: 160px;
+    border-radius: 50%;
+    background-color: #8bd1e5;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 22px;
+    position: relative;
+    z-index: 8;
+}
+div#infoboxpicin {
+    width: 150px;
+    /* 300 */
+    height: 150px;
+    border-radius: 50%;
+    background-color: #fff;
+    position: relative;
+    top: 5px;
+    left: 5px;
+}
+div#infoboxpicimg {
+    width: 150px;
+    /* 296 */
+    height: 150px;
+    border-radius: 50%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    position: relative;
+    top: 0px;
+    left: 0px;
+    opacity: .85;
+}
+.displaypokemon {
+    position: absolute;
+    left: -50px;
+    top: -25px;
+    width: 100px;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+.pokeimg> img {
+    padding-top: 5px;
+    margin: 0;
+    max-width: 50px;
+    min-height: 25px;
+    max-height: 50px;
+}
+.remainingtext2{
+    border-radius: 25px;
+    background-color: black;
+    text-align: center;
+    background-color: rgba(100, 100, 100, 0.7);
+    font-size: 12px;
+    margin: 0;
+    padding: 0;
+    color: white;
+    width: 100%;
+}
+.remainingtext, .pokemonDescription{
+    border-radius: 25px;
+    background-color: black;
+    text-align: center;
+    background-color: rgba(100, 100, 100, 0.7);
+    font-size: 12px;
+    margin: 0;
+    padding: 0;
+    color: white;
+    width: 100%;
+}.pokemonDescription {visibility: hidden;}
+</style>
+</head>
+
+<body>
+
+  <div id="map"></div>
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.4.0/leaflet.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.3.5/tabletop.min.js'></script>
+<!-- <script src='https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/(1.5.1 -1.3.5/tabletop.min.js'></script> -->
+<script src='https://labs.easyblog.it/maps/leaflet-search/src/leaflet-search.js'></script>
+
+<script>
+// https://github.com/jsoma/tabletop
+// https://labs.easyblog.it/maps/leaflet-search/
+// https://journocode.com/2017/02/20/javascript-interactive-map-with-search-bar-leaflet/
+var map;
+var mbUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
+var comic = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoicmFsY2FyYXoiLCJhIjoiY2prNmRxcmh1MXNqODNya2NocWY5azEweCJ9.4Qf2Wgh-d1e_ujcRkvq0MA';
+    
+var masnou = new L.LayerGroup();
+var mataro = new L.LayerGroup();
+var spawn = new L.LayerGroup();
+
+var calles = L.tileLayer(mbUrl, {id: 'mapbox.streets'}),
+    calles2 = L.tileLayer('https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png'),
+    verde = L.tileLayer('https://api.mapbox.com/styles/v1/poulzinho/ciu2fc21400k32iqi2gkb7h7g/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoicG91bHppbmhvIiwiYSI6ImNpdTJmMmlwMTAwMHAyeW55NmVpbXpoY3oifQ._S-9Yx6OXlnMMq_MgsodlA'),
+    comico = L.tileLayer(comic, {id: 'mapbox.comic'});
+  
+map = L.map('map', {
+  layers: [calles2, masnou]
+}).setView([41.482539,2.325211], 16);
+if (map.tap) map.tap.disable();
+map._layersMinZoom=5;
+
+var baseLayers = {
+  "Verde": verde,
+  "Comic": comico,
+  "calles": calles,
+  "wikimedia": calles2
+};
+var overlays = {
+  "Gyms": masnou,
+  "Pokeparadas": mataro,
+  "Pokemon Spawn":spawn
+};
+L.control.layers(baseLayers, overlays).addTo(map);
+
+// logo pokemongo _______________________
+L.Control.Watermark = L.Control.extend({
+    onAdd: function(map) {
+        var img = L.DomUtil.create('img');
+        img.src = 'https://pokemongolive.com/img/global/pgo_logo.png';
+        img.style.width = '100px';
+        return img;
+    },
+    onRemove: function(map) {}
+});
+L.control.watermark = function(opts) {
+    return new L.Control.Watermark(opts);
+}
+L.control.watermark({ position: 'bottomleft' }).addTo(map);
+// fin logo pokemongo ____________________
+
+// https://docs.google.com/spreadsheets/d/1NewJUeqgSRSu4kodHbodlggMjhI-0IYNYX4tJUdO58A/pub?output=html
+// https://docs.google.com/spreadsheets/d/11NuCbN1bKx9MZ6jx412OyRvBqb0l7k0ppFpmkDejIxc/pub?output=html
+var code = "11NuCbN1bKx9MZ6jx412OyRvBqb0l7k0ppFpmkDejIxc"
+Tabletop.init({
+  key: code,
+  callback: function(sheet, tabletop){
+    
+    $.each( tabletop.sheets("gymsM").all(), function(i, gim) {
+
+          var icon = L.icon({
+              iconUrl: gim.icon,
+              iconSize:     [48, 48],
+              popupAnchor: [0, -16]
+          });
+
+      var loc = [gim.latitude, gim.longitude]
+      marker = new L.Marker(new L.latLng(loc), {title: gim.nombre, icon: icon} );
+      marker.bindPopup("<h2><strong style='color: #84b819'>" + gim.nombre + "</strong></h2>" +
+  " <h3><a href='http://maps.google.com/maps?q=" +gim.latitude+","+gim.longitude+ "'>" + gim.latitude+", "+gim.longitude + "</a></h3>" +
+  "<div id='infoboxpic'><div id='infoboxpicin'><div id='infoboxpicimg' style='background-image: url(" +gim.imagen + ");'></div></div></div>");
+      
+      masnou.addLayer(marker);
+    })
+
+    $.each( tabletop.sheets("pokestopsM").all(), function(i, pokestop) {
+
+      var icon = L.icon({
+              iconUrl: pokestop.icon,
+              iconSize:    [32, 32],
+              popupAnchor: [0, -16]
+          });
+    
+      var loc = [pokestop.latitude, pokestop.longitude]
+      marker2 = new L.Marker(new L.latLng(loc), {title: pokestop.nombre, icon: icon} );
+      marker2.bindPopup("<h2><strong style='color: #84b819'>" + pokestop.nombre + "</strong></h2>" +
+  " <h3><a href='http://maps.google.com/maps?q=" +pokestop.latitude+","+pokestop.longitude+ "'>" + pokestop.latitude+", "+pokestop.longitude + "</a></h3>" +
+  "<div id='infoboxpic'><div id='infoboxpicin'><div id='infoboxpicimg' style='background-image: url(" +pokestop.imagen + ");'></div></div></div>");
+      
+      mataro.addLayer(marker2);
+    })
+  },
+  wanted: [ "gymsM", "pokestopsM" ],
+  debug: true
+})
+
+var controlSearch = new L.Control.Search({
+  position:'topleft',
+  //layer: masnou,
+  layer: L.featureGroup([masnou, mataro]),
+  //propertyName: 'nombre',
+  initial: false,
+  zoom: 16,
+  marker: {
+    // icon: new L.Icon({iconUrl:'icons/pstop1.png', iconSize: [0,0]}),
+    circle: {
+      radius: 60,
+      color: '#0a0',
+      opacity: 1
+    }
+  },
+  textPlaceholder: 'Pokeparada...'
+});
+map.addControl(controlSearch);
+</script>
+<script src="spawn4.js"></script>
+</body>
+</html>
