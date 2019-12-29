@@ -215,7 +215,7 @@ let isugerencia =  L.ExtraMarkers.icon ({
 	icon: "fa-question" , markerColor: "black" , shape: "circle" , prefix: "fas" ,
                                      }); // Icono sugerencia
 let iIngress = L.ExtraMarkers.icon ({
-	icon: "fa-dice-d20",markerColor: "green-dark",shape: "circle", prefix: "fas" , // innerHTML:'<img class="circleimg" src="./icons/ingress.png">' ,
+	icon: "fa-dice-d20",markerColor: "green-dark",shape: "circle", prefix: "fas" , innerHTML:'<img class="circleimg" src="./icons/ingress.png">' ,
                                      }); // Icono Ingress Portal
 	  
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -245,6 +245,20 @@ var MarkerPoligonOptions = 		// Marker Poligono sombreado celda 17.
 	noClip: true,
 //	bubblingMouseEvents = false,
 	};
+var MarkerPoligonOptions14 = 		// Marker Poligono sombreado celda 14.
+    	{
+	fillColor: "#FF0000",
+	color: "#FF0000",
+	weight: 5,
+	opacity: 0,
+	fillOpacity: 0.2,
+	interactive: false,
+	fill: true,
+	clickable: false,
+	noClip: true,
+//	bubblingMouseEvents = false,
+	};
+	  
 var MarkerNumCell14 =				// Para contar pokestops y gyms en celdas 14
     	{
 	Lat1 : 0,		// Latitud esquina superior izquierda
@@ -255,9 +269,9 @@ var MarkerNumCell14 =				// Para contar pokestops y gyms en celdas 14
 	};
 ArrayMarkerNumCell14 = [];	// Array de celdas 14 con numero de pokeparadas y gyms
 var ContMarkerNumCell14 = 0;	// Contador de celdas con marcadores
-var code = "1MBo6bA7aHIf4h-I0EkhDQB2YRAH9qijjnueobVfaets"	// Key code Excel datos vilafranca
+// var code = "1MBo6bA7aHIf4h-I0EkhDQB2YRAH9qijjnueobVfaets"	// Key code Excel datos vilafranca
 // var code = "1i7XMmyJ3maDAGr8PdeNo9FzLwQc_1e_pbjy3DYepjak"	// Key Code Excel Hospi Miami Montroig
-// var code = "1dfnZeHb7kD660uazTuxgRH87qGXOA8Nf366n-hYMSFM"     // Key Code Excel datos  Mas Tei Ale
+var code = "1dfnZeHb7kD660uazTuxgRH87qGXOA8Nf366n-hYMSFM"     // Key Code Excel datos  Mas Tei Ale
 // var code = "1rRcKbQqjrIVVVFO1smLvdVg-UrYrQ88ck0chL-I0Fss"	// Key Code Excel datos Cambrils
 Tabletop.init(
   {
@@ -425,7 +439,14 @@ Tabletop.init(
 			marker.addTo(LG_FaltanGym);	// Añadimos al grupo de Faltan para gym
 			ContadorFaltan++;
 			} 
-			else { TextMark = "<b> <p class='NumeroCoSi'> Máximo </p> <p style='font-size:large; text-align:center'> Número de Gyms Alcanzado </p></b>"; };
+			else 
+			{ 
+			TextMark = "<b> <p class='NumeroCoSi'> Máximo </p> <p style='font-size:large; text-align:center'> Número de Gyms Alcanzado </p></b>";
+			
+			const cell = S2.S2Cell.FromLatLng(loc, 14);
+  			const corners = cell.getCornerLatLngs();
+			new L.polyline([corners[0], corners[1], corners[2] , corners[3]], MarkerPoligonOptions14).addTo(LG_FaltanGym);
+			};
                 
 						 
 		marker = new L.Marker(loc, {title: "Total pokeparadas y gyms celda 14", icon: itotalpg} );
